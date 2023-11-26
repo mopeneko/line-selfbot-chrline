@@ -82,6 +82,24 @@ class CommandHook(HooksTracer):
         send_message(msg, "OK", cl)
 
     @tracer.Command()
+    def status(self, msg: Message, cl: CHRLINE) -> None:
+        """設定情報を送信"""
+        to = get_to(msg)
+
+        message_recover = False
+        data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+        if to in data.keys():
+            message_recover = True
+
+        def bool_to_str(v: bool) -> str:
+            if v:
+                return "オン"
+            return "オフ"
+
+        text = f"""送信取り消し: {bool_to_str(message_recover)}"""
+        send_message(msg, text, cl)
+
+    @tracer.Command()
     def recover_on(self, msg: Message, cl: CHRLINE) -> None:
         """メッセージ復元を有効化"""
 
