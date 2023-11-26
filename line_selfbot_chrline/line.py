@@ -21,10 +21,15 @@ class LINE(Singleton):
         cl = CHRLINE(device="IOSIPAD", useThrift=True)
         self.tracer = HooksTracer(cl)
 
+    def is_e2ee(self, msg: Message) -> bool:
+        if hasattr(msg, "isE2EE"):
+            return msg.isE2EE
+        return bool(msg.chunks)
+
     def send_message(self, got_msg: Message, text: str) -> None:
         to = self.get_to(got_msg)
         try:
-            if got_msg.isE2EE:
+            if self.is_e2ee(got_msg):
                 self.tracer.cl.sendCompactE2EEMessage(to, text)
                 return
             self.tracer.cl.sendCompactMessage(to, text)
