@@ -29,7 +29,7 @@ class CommandHook(HooksTracer):
         to = line.get_to(msg)
 
         message_recover = False
-        data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+        data: Dict[str, bool] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
         if to in data.keys():
             message_recover = True
 
@@ -45,7 +45,7 @@ class CommandHook(HooksTracer):
     def recover_on(self, msg: Message, cl: CHRLINE) -> None:
         """メッセージ復元を有効化"""
 
-        data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+        data: Dict[str, bool] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
         to = line.get_to(msg)
 
         if to in data.keys():
@@ -61,7 +61,7 @@ class CommandHook(HooksTracer):
     def recover_off(self, msg: Message, cl: CHRLINE) -> None:
         """メッセージ復元を無効化"""
 
-        data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+        data: Dict[str, bool] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
         to = line.get_to(msg)
 
         if to not in data.keys():

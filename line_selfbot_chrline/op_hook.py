@@ -32,7 +32,7 @@ class OpHook(HooksTracer):
             if msg.contentType != ContentType.NONE:
                 return
 
-            data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+            data: Dict[str, bool] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
             if to not in data.keys():
                 return
 
