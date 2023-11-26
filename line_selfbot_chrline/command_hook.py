@@ -26,6 +26,7 @@ class CommandHook(HooksTracer):
     @tracer.Command()
     def status(self, msg: Message, cl: CHRLINE) -> None:
         """設定情報を送信"""
+
         to = line.get_to(msg)
 
         statuses: Dict[str, bool] = {}
