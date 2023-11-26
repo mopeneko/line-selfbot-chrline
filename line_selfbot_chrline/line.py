@@ -28,13 +28,10 @@ class LINE(Singleton):
 
     def send_message(self, got_msg: Message, text: str) -> None:
         to = self.get_to(got_msg)
-        try:
-            if self.is_e2ee(got_msg):
-                self.tracer.cl.sendCompactE2EEMessage(to, text)
-                return
-            self.tracer.cl.sendCompactMessage(to, text)
-        except:
-            self.tracer.cl.sendCompactMessage(to, text)
+        if self.is_e2ee(got_msg):
+            self.tracer.cl.sendCompactE2EEMessage(to, text)
+            return
+        self.tracer.cl.sendCompactMessage(to, text)
 
     def get_to(self, msg: Message) -> str:
         to = msg.to
