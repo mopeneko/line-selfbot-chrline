@@ -8,7 +8,7 @@ from CHRLINE.services.thrift.ttypes import (
     MIDType,
 )
 
-cl = CHRLINE(device="DESKTOPWIN", useThrift=True)
+cl = CHRLINE(device="IOSIPAD", useThrift=True)
 
 tracer = HooksTracer(cl)
 
