@@ -139,6 +139,23 @@ class CommandHook(HooksTracer):
         line.send_message(msg, "参加挨拶を設定しました。")
 
     @tracer.Command()
+    def mentionees(self, msg: Message, cl: CHRLINE) -> None:
+        """メンション確認"""
+
+        data: Dict[str, list] = self.db.getData(DBKeys.MENTION, {})
+        to = line.get_to(msg)
+
+        if to not in data or len(data[to]) == 0:
+            line.send_message("メンションはありません。")
+            return
+
+        for i, msg_id in enumerate(data[to]):
+            cl.replyMessage(msg, text=str(i + 1), relatedMessageId=msg_id)
+
+        del data[to]
+        self.db.saveData(DBKeys.MENTION, data)
+
+    @tracer.Command()
     def debug(self, msg: Message, cl: CHRLINE) -> None:
         """デバッグ用コマンド"""
 

@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List
 from CHRLINE import CHRLINE
 from CHRLINE.hooks import HooksTracer
@@ -53,3 +54,25 @@ class OpHook(HooksTracer):
 
         text = data[gid]
         line.send_message(gid, text)
+
+    @tracer.Operation(OpType.RECEIVE_MESSAGE)
+    def receive_message(self, op: Operation, cl: CHRLINE) -> None:
+        msg = op.message
+
+        if msg.contentType != ContentType.NONE:
+            return
+
+        if "MENTION" not in msg.contentMetadata:
+            return
+
+        mention_data = json.loads(msg.contentMetadata["MENTION"])
+        for mention in mention_data["MENTIONEES"]:
+            if ("A" in mention.keys() and mention["A"] == 1) or (
+                "M" in mention.keys() and mention["M"] == cl.profile.mid
+            ):
+                data: Dict[str, list] = self.db.getData(DBKeys.MENTION, {})
+                to = line.get_to(msg)
+                if to not in data:
+                    data[to] = []
+                data[to].append(msg.id)
+                self.db.saveData(DBKeys.MENTION, data)
