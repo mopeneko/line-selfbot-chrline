@@ -1,4 +1,5 @@
-from typing import List
+from enum import Enum
+from typing import Dict, List
 from CHRLINE import CHRLINE
 from CHRLINE.hooks import HooksTracer
 from CHRLINE.services.thrift.ttypes import (
@@ -14,12 +15,19 @@ cl = CHRLINE(device="IOSIPAD", useThrift=True)
 tracer = HooksTracer(cl)
 
 
+class DBKeys(Enum):
+    MESSAGE_RECOVER = "message_recover"
+
+
 def send_message(got_msg: Message, text: str, cl: CHRLINE) -> None:
     to = get_to(got_msg)
-    if got_msg.isE2EE:
-        cl.sendCompactE2EEMessage(to, text)
-        return
-    cl.sendCompactMessage(to, text)
+    try:
+        if got_msg.isE2EE:
+            cl.sendCompactE2EEMessage(to, text)
+            return
+        cl.sendCompactMessage(to, text)
+    except:
+        cl.sendCompactMessage(to, text)
 
 
 def get_to(msg: Message) -> str:
@@ -44,6 +52,10 @@ class OpHook(HooksTracer):
         for msg in msgs:
             if msg.id == msg_id:
                 if msg.contentType == ContentType.NONE:
+                    data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+                    if to not in data.keys():
+                        return
+
                     text = f"メッセージが取り消されました。\n\n{msg.text}"
                     send_message(msg, text, cl)
                 return
@@ -68,6 +80,38 @@ class CommandHook(HooksTracer):
         """botの動作テスト"""
 
         send_message(msg, "OK", cl)
+
+    @tracer.Command()
+    def recover_on(self, msg: Message, cl: CHRLINE) -> None:
+        """メッセージ復元を有効化"""
+
+        data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+        to = get_to(msg)
+
+        if to in data.keys():
+            send_message(msg, "既に有効です。", cl)
+            return
+
+        data[to] = True
+        self.db.saveData(DBKeys.MESSAGE_RECOVER, data)
+
+        send_message(msg, "有効にしました。", cl)
+
+    @tracer.Command()
+    def recover_off(self, msg: Message, cl: CHRLINE) -> None:
+        """メッセージ復元を無効化"""
+
+        data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+        to = get_to(msg)
+
+        if to not in data.keys():
+            send_message(msg, "既に無効です。", cl)
+            return
+
+        del data[to]
+        self.db.saveData(DBKeys.MESSAGE_RECOVER, data)
+
+        send_message(msg, "無効にしました。", cl)
 
     @tracer.Command()
     def debug(self, msg: Message, cl: CHRLINE) -> None:
