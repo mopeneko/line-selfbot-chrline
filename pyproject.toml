@@ -15,7 +15,3 @@ black = "^23.11.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-start = "python ./line_selfbot_chrline/main.py"
-format = "black --fast ."
