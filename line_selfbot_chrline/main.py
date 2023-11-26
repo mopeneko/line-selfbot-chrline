@@ -55,5 +55,12 @@ class CommandHook(HooksTracer):
 
         send_message(msg, "OK", cl)
 
+    @tracer.Command()
+    def debug(self, msg: Message, cl: CHRLINE) -> None:
+        """デバッグ用コマンド"""
+
+        print(msg)
+        send_message(msg, "ターミナル見てね", cl)
+
 
 tracer.run()
