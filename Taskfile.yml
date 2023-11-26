@@ -1,0 +1,10 @@
+version: 3
+
+tasks:
+  start:
+    cmds:
+    - poetry run python ./line_selfbot_chrline/main.py
+
+  format:
+    cmds:
+    - poetry run black --fast .
