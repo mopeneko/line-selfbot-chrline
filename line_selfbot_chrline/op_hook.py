@@ -42,3 +42,14 @@ class OpHook(HooksTracer):
             text = f"メッセージが取り消されました。\n\n送信者: {contact.displayName}\n{msg.text}"
             line.send_message(msg, text)
             return
+
+    @tracer.Operation(OpType.NOTIFIED_JOIN_CHAT)
+    def notified_join_chat(self, op: Operation, cl: CHRLINE) -> None:
+        gid = op.param1
+
+        data: Dict[str, str] = self.db.getData(DBKeys.GREETING, {})
+        if gid not in data.keys():
+            return
+
+        text = data[gid]
+        line.send_message(gid, text)
