@@ -50,15 +50,19 @@ class OpHook(HooksTracer):
 
         msgs: List[Message] = cl.getRecentMessagesV2(to)
         for msg in msgs:
-            if msg.id == msg_id:
-                if msg.contentType == ContentType.NONE:
-                    data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
-                    if to not in data.keys():
-                        return
+            if msg.id != msg_id:
+                continue
 
-                    text = f"メッセージが取り消されました。\n\n{msg.text}"
-                    send_message(msg, text, cl)
+            if msg.contentType != ContentType.NONE:
                 return
+
+            data: Dict[str] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
+            if to not in data.keys():
+                return
+
+            text = f"メッセージが取り消されました。\n\n{msg.text}"
+            send_message(msg, text, cl)
+            return
 
 
 class ContentHook(HooksTracer):
