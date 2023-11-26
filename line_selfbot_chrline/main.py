@@ -1,3 +1,4 @@
+from typing import List
 from CHRLINE import CHRLINE
 from CHRLINE.hooks import HooksTracer
 from CHRLINE.services.thrift.ttypes import (
@@ -33,6 +34,19 @@ class OpHook(HooksTracer):
     @tracer.Operation(OpType.SEND_MESSAGE)
     def send_message(self, op: Operation, cl: CHRLINE) -> None:
         tracer.trace(op.message, self.HooksType["Content"], cl)
+
+    @tracer.Operation(OpType.NOTIFIED_DESTROY_MESSAGE)
+    def notified_destroy_message(self, op: Operation, cl: CHRLINE) -> None:
+        to = op.param1
+        msg_id = op.param2
+
+        msgs: List[Message] = cl.getRecentMessagesV2(to)
+        for msg in msgs:
+            if msg.id == msg_id:
+                if msg.contentType == ContentType.NONE:
+                    text = f"メッセージが取り消されました。\n\n{msg.text}"
+                    send_message(msg, text, cl)
+                return
 
 
 class ContentHook(HooksTracer):
