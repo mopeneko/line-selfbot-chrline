@@ -28,17 +28,21 @@ class CommandHook(HooksTracer):
         """設定情報を送信"""
         to = line.get_to(msg)
 
+        statuses: Dict[str, bool] = {}
+
         message_recover = False
         data: Dict[str, bool] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
         if to in data.keys():
             message_recover = True
+
+        statuses["送信取り消し"] = message_recover
 
         def bool_to_str(v: bool) -> str:
             if v:
                 return "オン"
             return "オフ"
 
-        text = f"""送信取り消し: {bool_to_str(message_recover)}"""
+        text = "\n".join([f"{k}: {bool_to_str(v)}" for k, v in statuses.items()])
         line.send_message(msg, text)
 
     @tracer.Command()
