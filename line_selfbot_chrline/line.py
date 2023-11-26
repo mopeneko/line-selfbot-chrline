@@ -25,7 +25,7 @@ class LINE(Singleton):
         to = self.get_to(got_msg)
         try:
             if got_msg.isE2EE:
-                self.cl.sendCompactE2EEMessage(to, text)
+                self.tracer.cl.sendCompactE2EEMessage(to, text)
                 return
             self.tracer.cl.sendCompactMessage(to, text)
         except:
