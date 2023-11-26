@@ -142,5 +142,18 @@ class CommandHook(HooksTracer):
     def debug(self, msg: Message, cl: CHRLINE) -> None:
         """デバッグ用コマンド"""
 
-        print(msg)
-        line.send_message(msg, "ターミナル見てね")
+        related_message_id = msg.relatedMessageId
+        if not related_message_id:
+            line.send_message(msg, "リプライでメッセージを指定してください。")
+            return
+
+        to = line.get_to(msg)
+        msgs = cl.getRecentMessagesV2(to)
+        for msg in msgs:
+            if msg.id != related_message_id:
+                continue
+
+            line.send_message(msg, str(msg))
+            return
+
+        line.send_message(msg, "メッセージが見つかりませんでした。")
