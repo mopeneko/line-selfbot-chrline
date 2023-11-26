@@ -6,6 +6,7 @@ from CHRLINE.services.thrift.ttypes import (
     Operation,
     ContentType,
     Message,
+    Contact,
 )
 from db_keys import DBKeys
 from line import LINE
@@ -36,6 +37,8 @@ class OpHook(HooksTracer):
             if to not in data.keys():
                 return
 
-            text = f"メッセージが取り消されました。\n\n{msg.text}"
+            contact: Contact = cl.getContact(msg._from)
+
+            text = f"メッセージが取り消されました。\n\n送信者: {contact.displayName}\n{msg.text}"
             line.send_message(msg, text)
             return
