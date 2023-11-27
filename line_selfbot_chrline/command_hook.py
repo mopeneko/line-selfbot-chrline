@@ -146,7 +146,7 @@ class CommandHook(HooksTracer):
         to = line.get_to(msg)
 
         if to not in data or len(data[to]) == 0:
-            line.send_message("メンションはありません。")
+            line.send_message(msg, "メンションはありません。")
             return
 
         for i, msg_id in enumerate(data[to]):
