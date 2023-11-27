@@ -62,7 +62,7 @@ class OpHook(HooksTracer):
         if msg.contentType != ContentType.NONE:
             return
 
-        if "MENTION" not in msg.contentMetadata:
+        if not msg.contentMetadata or "MENTION" not in msg.contentMetadata:
             return
 
         mention_data = json.loads(msg.contentMetadata["MENTION"])
