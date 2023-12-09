@@ -36,6 +36,6 @@ class LINE(Singleton):
     def get_to(self, msg: Message) -> str:
         to = msg.to
         if msg.toType == MIDType.USER:
-            to = msg.from_
+            to = msg._from
 
         return to
