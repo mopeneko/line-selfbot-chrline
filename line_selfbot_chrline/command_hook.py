@@ -11,20 +11,20 @@ tracer = line.tracer
 
 class CommandHook(HooksTracer):
     @tracer.Command()
-    def help(self, msg: Message, cl: CHRLINE) -> None:
+    def ヘルプ(self, msg: Message, cl: CHRLINE) -> None:
         """ヘルプを送信"""
 
         text = self.genHelp(self.getPrefix(msg.text))
         line.send_message(msg, text)
 
     @tracer.Command()
-    def test(self, msg: Message, cl: CHRLINE) -> None:
+    def テスト(self, msg: Message, cl: CHRLINE) -> None:
         """botの動作テスト"""
 
         line.send_message(msg, "OK")
 
     @tracer.Command()
-    def status(self, msg: Message, cl: CHRLINE) -> None:
+    def 設定(self, msg: Message, cl: CHRLINE) -> None:
         """設定情報を送信"""
 
         to = line.get_to(msg)
@@ -57,8 +57,8 @@ class CommandHook(HooksTracer):
         text = "\n".join([f"{k}: {v}" for k, v in statuses.items()])
         line.send_message(msg, text)
 
-    @tracer.Command(alt=["recover on"])
-    def recover_on(self, msg: Message, cl: CHRLINE) -> None:
+    @tracer.Command()
+    def 復元オン(self, msg: Message, cl: CHRLINE) -> None:
         """メッセージ復元を有効化"""
 
         data: Dict[str, bool] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
@@ -73,8 +73,8 @@ class CommandHook(HooksTracer):
 
         line.send_message(msg, "有効にしました。")
 
-    @tracer.Command(alt=["recover off"])
-    def recover_off(self, msg: Message, cl: CHRLINE) -> None:
+    @tracer.Command()
+    def 復元オフ(self, msg: Message, cl: CHRLINE) -> None:
         """メッセージ復元を無効化"""
 
         data: Dict[str, bool] = self.db.getData(DBKeys.MESSAGE_RECOVER, {})
@@ -89,8 +89,8 @@ class CommandHook(HooksTracer):
 
         line.send_message(msg, "無効にしました。")
 
-    @tracer.Command(alt=["greeting on"])
-    def greeting_on(self, msg: Message, cl: CHRLINE) -> None:
+    @tracer.Command()
+    def 挨拶オン(self, msg: Message, cl: CHRLINE) -> None:
         """参加挨拶を有効化"""
 
         data: Dict[str, str] = self.db.getData(DBKeys.GREETING, {})
@@ -103,10 +103,10 @@ class CommandHook(HooksTracer):
         data[to] = "よろしく！"
         self.db.saveData(DBKeys.GREETING, data)
 
-        line.send_message(msg, "有効にしました。\n挨拶の初期設定は「よろしく！」です。\n「greeting:文字列」で変更できます。")
+        line.send_message(msg, "有効にしました。\n挨拶の初期設定は「よろしく！」です。\n「挨拶:文字列」で変更できます。")
 
-    @tracer.Command(alt=["greeting off"])
-    def greeting_off(self, msg: Message, cl: CHRLINE) -> None:
+    @tracer.Command()
+    def 挨拶オフ(self, msg: Message, cl: CHRLINE) -> None:
         """参加挨拶を無効化"""
 
         data: Dict[str, str] = self.db.getData(DBKeys.GREETING, {})
@@ -122,7 +122,7 @@ class CommandHook(HooksTracer):
         line.send_message(msg, "無効にしました。")
 
     @tracer.Command(splitchar=":")
-    def greeting(self, msg: Message, cl: CHRLINE) -> None:
+    def 挨拶(self, msg: Message, cl: CHRLINE) -> None:
         """参加挨拶を設定"""
 
         data: Dict[str, str] = self.db.getData(DBKeys.GREETING, {})
@@ -139,7 +139,7 @@ class CommandHook(HooksTracer):
         line.send_message(msg, "参加挨拶を設定しました。")
 
     @tracer.Command()
-    def mentionees(self, msg: Message, cl: CHRLINE) -> None:
+    def メンション確認(self, msg: Message, cl: CHRLINE) -> None:
         """メンション確認"""
 
         data: Dict[str, list] = self.db.getData(DBKeys.MENTION, {})

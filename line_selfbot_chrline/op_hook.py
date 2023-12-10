@@ -11,6 +11,7 @@ from CHRLINE.services.thrift.ttypes import (
 )
 from db_keys import DBKeys
 from line import LINE
+from logger import logger
 
 line = LINE()
 tracer = line.tracer
@@ -20,6 +21,14 @@ class OpHook(HooksTracer):
     @tracer.Operation(OpType.SEND_MESSAGE)
     def send_message(self, op: Operation, cl: CHRLINE) -> None:
         tracer.trace(op.message, self.HooksType["Content"], cl)
+
+    @tracer.Operation(OpType.RECEIVE_MESSAGE)
+    def receive_message(self, op: Operation, cl: CHRLINE) -> None:
+        if op.message.toType != ContentType.NONE:
+            return
+        if op.message.chunks:
+            op.message.text = cl.decryptE2EETextMessage(op.message, isSelf=False)
+        logger.debug(f"{op.message.to} | {op.message._from} | {op.message.text}")
 
     @tracer.Operation(OpType.NOTIFIED_DESTROY_MESSAGE)
     def notified_destroy_message(self, op: Operation, cl: CHRLINE) -> None:
