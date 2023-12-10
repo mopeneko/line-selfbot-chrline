@@ -7,6 +7,7 @@ from CHRLINE.services.thrift.ttypes import (
     Operation,
     ContentType,
     Message,
+    MIDType,
     Contact,
 )
 from db_keys import DBKeys
@@ -21,14 +22,6 @@ class OpHook(HooksTracer):
     @tracer.Operation(OpType.SEND_MESSAGE)
     def send_message(self, op: Operation, cl: CHRLINE) -> None:
         tracer.trace(op.message, self.HooksType["Content"], cl)
-
-    @tracer.Operation(OpType.RECEIVE_MESSAGE)
-    def receive_message(self, op: Operation, cl: CHRLINE) -> None:
-        if op.message.toType != ContentType.NONE:
-            return
-        if op.message.chunks:
-            op.message.text = cl.decryptE2EETextMessage(op.message, isSelf=False)
-        logger.debug(f"{op.message.to} | {op.message._from} | {op.message.text}")
 
     @tracer.Operation(OpType.NOTIFIED_DESTROY_MESSAGE)
     def notified_destroy_message(self, op: Operation, cl: CHRLINE) -> None:
@@ -73,6 +66,20 @@ class OpHook(HooksTracer):
 
         if msg.contentType != ContentType.NONE:
             return
+
+        if op.message.chunks:
+            op.message.text = cl.decryptE2EETextMessage(op.message, isSelf=False)
+
+        group_id = op.message.to if op.message.toType == MIDType.GROUP else "-"
+        group_name = "-"
+        from_id = op.message._from
+        from_name = cl.getContact(op.message._from).displayName
+        if op.message.toType == MIDType.GROUP:
+            group_name = cl.getChats([op.message.to]).chats[0].chatName
+
+        logger.debug(
+            f"{group_id}({group_name}) | {from_id}({from_name}) | {op.message.text}"
+        )
 
         if not msg.contentMetadata or "MENTION" not in msg.contentMetadata:
             return

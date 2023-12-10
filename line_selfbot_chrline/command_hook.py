@@ -103,7 +103,7 @@ class CommandHook(HooksTracer):
         data[to] = "よろしく！"
         self.db.saveData(DBKeys.GREETING, data)
 
-        line.send_message(msg, "有効にしました。\n挨拶の初期設定は「よろしく！」です。\n「挨拶:文字列」で変更できます。")
+        line.send_message(msg, "有効にしました。\n挨拶の初期設定は「よろしく！」です。\n「!挨拶:文字列」で変更できます。")
 
     @tracer.Command()
     def 挨拶オフ(self, msg: Message, cl: CHRLINE) -> None:
