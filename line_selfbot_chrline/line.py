@@ -1,3 +1,4 @@
+import os
 from CHRLINE import CHRLINE
 from CHRLINE.hooks import HooksTracer
 from CHRLINE.services.thrift.ttypes import Message, MIDType
@@ -18,7 +19,11 @@ class Singleton(metaclass=MetaSingleton):
 
 class LINE(Singleton):
     def __init__(self):
-        cl = CHRLINE(device="IOSIPAD", useThrift=True)
+        cl = CHRLINE(
+            authTokenOrEmail=os.getenv("LINE_AUTHTOKEN"),
+            device="IOSIPAD",
+            useThrift=True,
+        )
         self.tracer = HooksTracer(cl)
 
     def is_e2ee(self, msg: Message) -> bool:
@@ -35,7 +40,5 @@ class LINE(Singleton):
 
     def get_to(self, msg: Message) -> str:
         to = msg.to
-        if msg.toType == MIDType.USER:
-            to = msg._from
 
         return to
