@@ -40,6 +40,9 @@ class OpHook(HooksTracer):
 
             contact: Contact = cl.getContact(msg._from)
 
+            if msg.chunks:
+                msg.text = cl.decryptE2EETextMessage(msg, isSelf=False)
+
             text = f"メッセージが取り消されました。\n\n送信者: {contact.displayName}\n{msg.text}"
             line.send_message(msg, text)
             return

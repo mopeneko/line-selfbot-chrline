@@ -170,6 +170,8 @@ class CommandHook(HooksTracer):
             if msg.id != related_message_id:
                 continue
 
+            if msg.chunks:
+                msg.text = cl.decryptE2EETextMessage(msg, isSelf=False)
             line.send_message(msg, str(msg))
             return
 
